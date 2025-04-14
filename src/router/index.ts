@@ -39,6 +39,16 @@ const router = createRouter({
       component: () => import('@/views/NotFoundView.vue'),
       meta: { hide: true },
     },
+    {
+      path: '/exercices',
+      name: 'Exercices',
+      component: () => import('@/views/Exercices.vue'),
+    },
+    {
+      path: '/login',
+      name: 'Login',
+      component: () => import('@/views/Login.vue'),
+    },    
   ],
 })
 
