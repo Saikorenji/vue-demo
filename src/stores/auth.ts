@@ -7,7 +7,7 @@ export const useAuthStore = defineStore('auth', () => {
 
   const isLoggedIn = () => !!token.value
 
-  const login = async (password) => {
+  const login = async (password: string) => {
     const res = await fetch('https://nuxt-demo-blush.vercel.app/api/login', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
@@ -27,7 +27,8 @@ export const useAuthStore = defineStore('auth', () => {
   const logout = () => {
     token.value = ''
     userId.value = ''
-    localStorage.clear()
+    localStorage.removeItem('token')
+    localStorage.removeItem('userId')
   }
 
   return { token, userId, login, logout, isLoggedIn }

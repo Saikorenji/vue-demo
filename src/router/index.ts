@@ -1,5 +1,6 @@
 import { createRouter, createWebHistory } from 'vue-router'
 import HomeView from '../views/HomeView.vue'
+import { useAuthStore } from '@/stores/auth' // 🔥 important
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -12,9 +13,6 @@ const router = createRouter({
     {
       path: '/fundamentals',
       name: 'Fundamentals',
-      // route level code-splitting
-      // this generates a separate chunk (About.[hash].js) for this route
-      // which is lazy-loaded when the route is visited.
       component: () => import('@/views/FundamentalsView.vue'),
     },
     {
@@ -34,28 +32,54 @@ const router = createRouter({
       component: () => import('@/views/TestsView.vue'),
     },
     {
+      path: '/ajouter',
+      name: 'AjoutMemecoins',
+      component: () => import('@/views/AjoutMemecoins.vue'),
+      meta: { requiresAuth: true } // 🔐 protégé
+    },
+    {
+      path: '/memecoins',
+      name: 'Memecoins',
+      component: () => import('@/views/Memecoins.vue'),
+      meta: { requiresAuth: true } // 🔐 protégé
+    },
+    {
+      path: '/login',
+      name: 'Login',
+      component: () => import('@/views/Login.vue'),
+    },
+    {
       path: '/:pathMatch(.*)*',
       name: '404',
       component: () => import('@/views/NotFoundView.vue'),
       meta: { hide: true },
     },
     {
-      path: '/exercices',
-      name: 'Exercices',
-      component: () => import('@/views/Exercices.vue'),
-    },
-    {
-      path: '/login',
-      name: 'Login',
-      component: () => import('@/views/Login.vue'),
-    },    
+      path: '/trading',
+      name: 'Trading',
+      component: () => import('@/views/Trading.vue'),
+      meta: { requiresAuth: true } // protégé
+    }    
   ],
 })
 
-// Navigation guard
+// 🔐 Navigation guard global
 router.beforeEach((to, from, next) => {
+  const auth = useAuthStore()
+
+  // message spécial pour la route "routing"
   if (to.meta.sayHello) {
     console.log('hello !')
+  }
+
+  // ✅ Redirection si non connecté sur une route protégée
+  if (to.meta.requiresAuth && !auth.token) {
+    return next('/login')
+  }
+
+  // 🚫 Empêche d'accéder à /login si déjà connecté
+  if (to.path === '/login' && auth.token) {
+    return next('/memecoins')
   }
 
   next()
